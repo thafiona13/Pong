@@ -33,28 +33,28 @@ procedure shadowbox (T, L, H, W, WC, SC, BC : int) %procedure to make shadown bo
     colorback (SC) %shadow colour layer 2
 
     for row : 1 .. H %For each row
-	locate (T + row + 1, L + 1)
-	put " " : W .. % prints w spaces across each row
-	%delay (500)
+        locate (T + row + 1, L + 1)
+        put " " : W .. % prints w spaces across each row
+        %delay (500)
     end for
     colorback (BC) % box colour layer 3
     for row : 1 .. H %draws box same as shadow
-	locate (T + row, L) %puts cursor on correct row
-	put " " : W .. %puts w spaces across each row
+        locate (T + row, L) %puts cursor on correct row
+        put " " : W .. %puts w spaces across each row
     end for
 end shadowbox
 %scoring system
 procedure score
     if goal1 = 10 or goal2 = 10 then %if either player reaches 10 points, game is over
-	option := "10"
-	cls
-	put "Player 1 score: ", goal1 %shows final score
-	put "Player 2 score: ", goal2 %
-	if goal1 > goal2 then
-	    put "Player 2 wins" %shows winner
-	else
-	    put "Player 1 wins"
-	end if
+        option := "10"
+        cls
+        put "Player RED score: ", goal1 %shows final score
+        put "Player GREEN score: ", goal2 %
+        if goal1 > goal2 then
+            put "Player Green wins" %shows winner
+        else
+            put "Player Red wins"
+        end if
     end if
 end score
 
@@ -66,110 +66,122 @@ procedure game
     View.Set ("offscreenonly")
 
     loop
-	%exit when one player reaches score of 10
-	exit when option = "10"
-	%ball
-	xb := xb + xbd %direction of the ball going horizontally
-	yb := yb + ybd %direction og the ball going vertically
+        %exit when one player reaches score of 10
+        exit when option = "10"
+        %ball
+        xb := xb + xbd %direction of the ball going horizontally
+        yb := yb + ybd %direction og the ball going vertically
 
-	% change the x direction when the left or right paddle is hit
-	if yb<=160 and xb >=y1
-	end if
-	% change the y direction when the top or bottom is hit
-	if (yb + r >= 350 or yb - r < 0) then
-	    ybd := (-1) * ybd
-	end if
+        % change the x direction when the left or right paddle is aligned with the ball
 
-
-	%player 1 controls
-	Input.KeyDown (charst)
-	if charst ('w') then     %if w is pressed, player1 moves up
-	    y1 := y1 + 2
-	    cls
-	elsif charst ('s') then     %if s is pressed, player 1 moves down
-	    y1 := y1 - 2
-	    cls
-	end if
-	if y1 <= 0 then     %stops player 1 at the bottom
-	    y1 := 1
-	elsif y1 + 55 >= 350 then     %stops player 1 at the top
-	    y1 := 350 - 55
-	end if
-
-	%player 2 controls
-	Input.KeyDown (charst)
-	if charst (KEY_UP_ARROW) then     %player2 going up
-	    y2 := y2 + 2
-	    cls
-	elsif charst (KEY_DOWN_ARROW) then     %player 2 going down
-	    y2 := y2 - 2
-	    cls
-	end if
-	if y2 <= 0 then     %stops player 2 at the bottom
-	    y2 := 1
-	elsif y2 + 55 >= 350 then     %stops player 2 at the top
-	    y2 := 350 - 55
-	end if
-
-	%if the ball hits either side, adds point to other player and sends it back to middle
-	%if xb + r = 18 then    %if it hits player 1 side
-	%   xb := 315 %sets back to begining position
-	%  yb := 175
-	% goal2 := goal2 + 1 %adds score 1
-	% elsif xb + r = 638 then %if it hits player 2 side
-	%  xb := 315
-	%  yb := 175 %sets back to starting position
-	%   %   goal1 := goal1 + 1 %adds score for 2
-	%  end if
+        if xb - r = 9 and yb - 10 >= y1 and yb - 10 <= y1 + 55 or xb - r = 4 and yb - 10 >= y1 and yb - 10 <= y1 + 55 then
+            xbd := xbd * (-1)
+            ybd := ybd * (1)
+        elsif xb + r = 630 and yb + 10 >= y2 and yb + 10 <= y2 + 55 or xb + 5 = 635 and yb + 10 >= y2 and yb + 10 <= y2 + 55 then
+            xbd := xbd * (-1)
+            ybd := ybd * (1)
+        end if
+        % change the y direction when the top or bottom is hit
+        if (yb + r >= 350 or yb - r < 0) then
+            ybd := (-1) * ybd
+        end if
 
 
-	%shows the score
-	put "Player 1 score: ", goal1
-	put "Player 2 score: ", goal2
-	score
+        %player 1 controls
+        Input.KeyDown (charst)
+        if charst ('w') then     %if w is pressed, player1 moves up
+            y1 := y1 + 2
+            cls
+        elsif charst ('s') then     %if s is pressed, player 1 moves down
+            y1 := y1 - 2
+            cls
+        end if
+        if y1 <= 0 then     %stops player 1 at the bottom
+            y1 := 1
+        elsif y1 + 55 >= 350 then     %stops player 1 at the top
+            y1 := 350 - 55
+        end if
 
-	%Lines and shapes
-	drawfillbox (x1a, y1, x1b, y1 + 55, red)         %draws player 1 paddle
-	drawfillbox (x2a, y2, x2b, y2 + 55, green)         %draws player 2 paddle
-	drawline (1, 350, maxx, 350, black)         %draws top border of playing field
-	drawline (1, 1, maxx, 1, black)         %draws bottom border of playing field
-	drawline (1, 1, 1, 350, black)         %draws left border
-	drawline (638, 1, 638, 350, black)         %draws right border
-	drawfilloval (xb, yb, r, r, black)         %draws ball
-	View.Update         % update the screen for double buffering
-	delay (5)
-	cls
+        %player 2 controls
+        Input.KeyDown (charst)
+        if charst (KEY_UP_ARROW) then     %player2 going up
+            y2 := y2 + 2
+            cls
+        elsif charst (KEY_DOWN_ARROW) then     %player 2 going down
+            y2 := y2 - 2
+            cls
+        end if
+        if y2 <= 0 then     %stops player 2 at the bottom
+            y2 := 1
+        elsif y2 + 55 >= 350 then     %stops player 2 at the top
+            y2 := 350 - 55
+        end if
+
+        %if the ball hits either side, adds point to other player and sends it back to middle
+        if xb + r = 18 then     %if it hits player 1 side
+            xb := 315     %sets back to begining position
+            yb := 175
+            goal2 := goal2 + 1     %adds score 1
+        elsif xb + r = 638 then     %if it hits player 2 side
+            xb := 315
+            yb := 175     %sets back to starting position
+            goal1 := goal1 + 1     %adds score for 2
+        end if
+
+
+        %shows the score
+        put "Player RED score: ", goal1
+        put "Player GREEN score: ", goal2
+        score
+
+        %Lines and shapes
+        drawfillbox (x1a, y1, x1b, y1 + 55, red)         %draws player 1 paddle
+        drawfillbox (x2a, y2, x2b, y2 + 55, green)         %draws player 2 paddle
+        drawline (1, 350, maxx, 350, black)         %draws top border of playing field
+        drawline (1, 1, maxx, 1, black)         %draws bottom border of playing field
+        drawline (1, 1, 1, 350, black)         %draws left border
+        drawline (638, 1, 638, 350, black)         %draws right border
+        drawfilloval (xb, yb, r, r, black)         %draws ball
+        View.Update         % update the screen for double buffering
+        delay (3)
+        cls
     end loop
 end game
+cls
 
 procedure tutorial
     cls
     loop
-	shadowbox (T, L, 10, 44, 133, 171, 12)
-	locate (T + 1, L + 15)
-	put "Tutorial" ..
-	locate (T + 3, L + 2)
-	put "Player 1 use controls W and S" ..
-	locate (T + 4, L + 2)
-	put "Player 2 use controls Up and Down arrows" ..
-	locate (T + 6, L + 2)
-	put "Press 1 again to start game.." ..
-	locate (T + 7, L + 2)
-	put "Press ESC to go back to main menu.." ..
-	locate (T + 8, L + 2)
-	put "" ..
-	get option
-	exit when option = (KEY_ESC)
-	if option = "1" then
-	    game
-	end if
-
+        shadowbox (T, L, 10, 44, 100, 88, 3)
+        locate (T + 1, L + 15)
+        put "Tutorial" ..
+        locate (T + 3, L + 2)
+        put "Player 1 use controls W and S" ..
+        locate (T + 4, L + 2)
+        put "Player 2 use controls Up and Down arrows" ..
+        locate (T + 5, L + 2)
+        put "Regular game of pong!" ..
+        locate (T + 6, L + 2)
+        put "Press 1 again to start game.." ..
+        locate (T + 7, L + 2)
+        put "Press ESC to go back to main menu.." ..
+        locate (T + 8, L + 2)
+        put "" ..
+        get option
+        exit when option = (KEY_ESC)
+        if option = "1" then
+            game
+        end if
     end loop
 end tutorial
+
+
+
 loop
-    shadowbox (T, L, 10, 44, 133, 171, 12)
+cls
+    shadowbox (T, L, 10, 44, 100, 88, 3)
     locate (T + 1, L + 13)
-    put "  Welcome to PONG" ..
+    put "  Welcome to Gravitate" ..
     locate (T + 3, L + 5)
     put "Press 1 to start.." ..
     locate (T + 4, L + 5)
@@ -179,8 +191,7 @@ loop
     get option
     exit when option = (KEY_ESC)
     if option = "1" then
-	tutorial
+        tutorial
     end if
 end loop
 cls
-done
